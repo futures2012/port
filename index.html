@@ -124,7 +124,6 @@
       padding: 15px;
       margin-top: 50px;
     }
-
   </style>
 </head>
 <body>
@@ -138,7 +137,7 @@
   <div class="upload-box">
     <h2>Upload Your Design</h2>
     <input type="file" id="designInput" accept="image/*">
-    <button onclick="uploadDesign()">Upload</button>
+    <button onclick="uploadToCloudinary()">Upload</button>
   </div>
 
   <div class="gallery" id="gallery">
@@ -160,28 +159,41 @@
   </div>
 
   <footer>
-    © 2025 Futures Language Schools - Design Contest  -Made by Ahmed Khaled
+    © 2025 Futures Language Schools - Design Contest  - Made by Ahmed Khaled
   </footer>
 
   <script>
-    const gallery = document.getElementById("gallery");
-
-    // function to upload new design
-    function uploadDesign() {
+    // Cloudinary upload function
+    async function uploadToCloudinary() {
       const fileInput = document.getElementById("designInput");
       const file = fileInput.files[0];
       if (!file) return alert("Please choose an image first!");
 
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        const uniqueId = "design-" + Date.now(); // unique ID for each design
-        addDesign(e.target.result, uniqueId);
-      };
-      reader.readAsDataURL(file);
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("upload_preset", "YOUR_UNSIGNED_PRESET"); // Replace with your preset
+      const cloudName = "YOUR_CLOUD_NAME"; // Replace with your Cloudinary cloud name
+      const url = `https://api.cloudinary.com/v1_1/${cloudName}/upload`;
+
+      try {
+        const response = await fetch(url, {
+          method: "POST",
+          body: formData,
+        });
+        const data = await response.json();
+        if (data.secure_url) {
+          addDesign(data.secure_url, "design-" + Date.now()); // Add the uploaded image to the gallery
+        } else {
+          alert("Upload failed: " + JSON.stringify(data));
+        }
+      } catch (err) {
+        alert("Upload error: " + err.message);
+      }
     }
 
-    // add design to gallery
+    // Add uploaded design to gallery
     function addDesign(imageSrc, id) {
+      const gallery = document.getElementById("gallery");
       const div = document.createElement("div");
       div.className = "design";
       div.setAttribute("data-id", id);
@@ -195,30 +207,29 @@
       gallery.appendChild(div);
     }
 
-    // voting system
+    // Voting system
     function vote(button) {
       const designDiv = button.closest(".design");
       const designId = designDiv.getAttribute("data-id");
 
-      // check if user already voted for this design
+      // Check if user already voted for this design
       const votedDesigns = JSON.parse(localStorage.getItem("votedDesigns") || "[]");
       if (votedDesigns.includes(designId)) {
         alert("You already voted for this design!");
         return;
       }
 
-      // count votes
+      // Count votes
       const votesDiv = button.nextElementSibling;
       let votes = parseInt(votesDiv.textContent);
       votes++;
       votesDiv.textContent = votes + " votes";
 
-      // save vote in localStorage
+      // Save vote in localStorage
       votedDesigns.push(designId);
       localStorage.setItem("votedDesigns", JSON.stringify(votedDesigns));
     }
   </script>
 </body>
-
 </html>
 
