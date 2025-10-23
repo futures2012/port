@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Futures Schools - Best Uniform Design Voting</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      background: linear-gradient(180deg, #e8f0ff 0%, #ffffff 100%);
+      color: #222;
+      text-align: center;
+    }
+
+    header {
+      background: white;
+      padding: 20px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    header img {
+      width: 120px;
+      height: auto;
+    }
+
+    header h1 {
+      color: #0b3d91;
+      margin-top: 10px;
+      font-size: 24px;
+    }
+
+    .intro {
+      margin: 30px auto 20px;
+      font-size: 18px;
+      color: #333;
+    }
+
+    .upload-box {
+      background: #fff;
+      margin: 20px auto;
+      padding: 25px;
+      border-radius: 14px;
+      width: 90%;
+      max-width: 500px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .upload-box h2 {
+      color: #0b3d91;
+      margin-bottom: 10px;
+    }
+
+    input[type="file"] {
+      margin: 10px 0;
+      padding: 10px;
+    }
+
+    button {
+      background: #0b3d91;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 15px;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: #082c6b;
+    }
+
+    .gallery {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 25px;
+      margin: 40px auto;
+      width: 90%;
+      max-width: 1000px;
+    }
+
+    .design {
+      background: white;
+      border-radius: 12px;
+      width: 250px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      transition: transform 0.2s ease;
+    }
+
+    .design:hover {
+      transform: scale(1.03);
+    }
+
+    .design img {
+      width: 100%;
+      height: auto;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .design-content {
+      padding: 10px;
+    }
+
+    .votes {
+      color: #0b3d91;
+      font-weight: bold;
+      margin-top: 6px;
+    }
+
+    footer {
+      background: #0b3d91;
+      color: white;
+      padding: 15px;
+      margin-top: 50px;
+    }
+
+  </style>
+</head>
+<body>
+  <header>
+    <img src="Futures-language-schools-logo.jpg" alt="Futures Schools Logo">
+    <h1>Futures Schools - Best Uniform Design Voting</h1>
+  </header>
+
+  <p class="intro">Vote for your favorite school uniform design or upload your own idea!</p>
+
+  <div class="upload-box">
+    <h2>Upload Your Design</h2>
+    <input type="file" id="designInput" accept="image/*">
+    <button onclick="uploadDesign()">Upload</button>
+  </div>
+
+  <div class="gallery" id="gallery">
+    <div class="design" data-id="design1">
+      <img src="design1.jpg" alt="Design 1">
+      <div class="design-content">
+        <button onclick="vote(this)">Vote 👍</button>
+        <div class="votes">0 votes</div>
+      </div>
+    </div>
+
+    <div class="design" data-id="design2">
+      <img src="design2.jpg" alt="Design 2">
+      <div class="design-content">
+        <button onclick="vote(this)">Vote 👍</button>
+        <div class="votes">0 votes</div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    © 2025 Futures Language Schools - Design Contest  -Made by Ahmed Khaled
+  </footer>
+
+  <script>
+    const gallery = document.getElementById("gallery");
+
+    // function to upload new design
+    function uploadDesign() {
+      const fileInput = document.getElementById("designInput");
+      const file = fileInput.files[0];
+      if (!file) return alert("Please choose an image first!");
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const uniqueId = "design-" + Date.now(); // unique ID for each design
+        addDesign(e.target.result, uniqueId);
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // add design to gallery
+    function addDesign(imageSrc, id) {
+      const div = document.createElement("div");
+      div.className = "design";
+      div.setAttribute("data-id", id);
+      div.innerHTML = `
+        <img src="${imageSrc}" alt="Uploaded Design">
+        <div class="design-content">
+          <button onclick="vote(this)">Vote 👍</button>
+          <div class="votes">0 votes</div>
+        </div>
+      `;
+      gallery.appendChild(div);
+    }
+
+    // voting system
+    function vote(button) {
+      const designDiv = button.closest(".design");
+      const designId = designDiv.getAttribute("data-id");
+
+      // check if user already voted for this design
+      const votedDesigns = JSON.parse(localStorage.getItem("votedDesigns") || "[]");
+      if (votedDesigns.includes(designId)) {
+        alert("You already voted for this design!");
+        return;
+      }
+
+      // count votes
+      const votesDiv = button.nextElementSibling;
+      let votes = parseInt(votesDiv.textContent);
+      votes++;
+      votesDiv.textContent = votes + " votes";
+
+      // save vote in localStorage
+      votedDesigns.push(designId);
+      localStorage.setItem("votedDesigns", JSON.stringify(votedDesigns));
+    }
+  </script>
+</body>
+</html>
