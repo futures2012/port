@@ -220,38 +220,5 @@
   </script>
 </body>
 
-</html><input type="file" id="fileInput" />
-<button onclick="uploadToCloudinary()">Upload</button>
+</html>
 
-<script>
-  async function uploadToCloudinary() {
-    const fileInput = document.getElementById('fileInput');
-    if (!fileInput.files.length) {
-      alert('Please select a file first!');
-      return;
-    }
-
-    const file = fileInput.files[0];
-    const url = `https://api.cloudinary.com/v1_1/YOUR_CLOUD_NAME/upload`;
-
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('upload_preset', 'YOUR_UNSIGNED_PRESET');
-
-    try {
-      const response = await fetch(url, {
-        method: 'POST',
-        body: formData
-      });
-      const data = await response.json();
-      if (data.secure_url) {
-        alert('Upload successful! File URL: ' + data.secure_url);
-        console.log('Uploaded file URL:', data.secure_url);
-      } else {
-        alert('Upload failed: ' + JSON.stringify(data));
-      }
-    } catch (err) {
-      alert('Upload error: ' + err.message);
-    }
-  }
-</script>
